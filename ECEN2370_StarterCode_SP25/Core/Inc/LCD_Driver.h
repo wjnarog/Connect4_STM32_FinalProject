@@ -12,6 +12,8 @@
 #include "ili9341.h"
 #include "fonts.h"
 #include "stmpe811.h"
+#include <stdio.h>
+#include "Game_Driver.h"
 
 #define COMPILE_TOUCH_FUNCTIONS COMPILE_TOUCH
 #define TOUCH_INTERRUPT_ENABLED COMPILE_TOUCH_INTERRUPT_SUPPORT
@@ -54,6 +56,25 @@
 #define  LCD_PIXEL_HEIGHT   ((uint16_t)320)
 #define  LCD_PIXELS		     ((uint32_t)LCD_PIXEL_WIDTH * (uint32_t)LCD_PIXEL_HEIGHT)
 
+#define LCD_PIXEL_WIDTH_CENTER (LCD_PIXEL_WIDTH/2)
+#define LCD_PIXEL_HEIGHT_CENTER (LCD_PIXEL_HEIGHT/2)
+
+#define TOKEN_PIXEL_MOVEMENT 35 //ish like 17.14285
+
+
+//columns and rows
+#define COLUMN_NUM_DIVISOR 1/7
+#define ROW_NUM_DIVISOR 1/7 //can only use 6 tho
+
+#define CHIP_OFFSET 0.5
+
+
+enum LCD_Side{
+	LEFT,
+	RIGHT
+};
+
+
 void LTCD__Init(void);
 void LTCD_Layer_Init(uint8_t LayerIndex);
 
@@ -67,6 +88,7 @@ void LCD_Draw_Circle_Fill(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_
 
 // Draw Vertical Line
 void LCD_Draw_Vertical_Line(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
+void LCD_Draw_Horizontal_Line(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
 void LCD_Clear(uint8_t LayerIndex, uint16_t Color);
 
 void LCD_Error_Handler(void);
@@ -81,8 +103,20 @@ void InitializeLCDTouch(void);
 STMPE811_State_t returnTouchStateAndLocation(STMPE811_TouchData * touchStruct);
 void LCD_Touch_Polling_Demo(void);
 void DetermineTouchPosition(STMPE811_TouchData * touchStruct);
+//uint8_t DetermineLeftOrRightTouch(STMPE811_TouchData * touchStruct);
+uint8_t DetermineLeftOrRightTouch(uint16_t  xCoord);
 uint8_t ReadRegisterFromTouchModule(uint8_t RegToRead);
 void WriteDataToTouchModule(uint8_t RegToWrite, uint8_t writeData);
+
+
+void displayStartScreen();
+
+void displayGameScreen();
+
+void displayWinner();
+
+void displayEndScreen();
+
 
 #endif // COMPILE_TOUCH_FUNCTIONS
 

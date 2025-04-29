@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+extern RNG_HandleTypeDef hrng;
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

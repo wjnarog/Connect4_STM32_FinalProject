@@ -230,9 +230,23 @@ void LCD_Draw_Circle_Fill(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_
 
 void LCD_Draw_Vertical_Line(uint16_t x, uint16_t y, uint16_t len, uint16_t color)
 {
-  for (uint16_t i = 0; i < len; i++)
-  {
+  for (uint16_t i = 0; i < len; i++){
 	  LCD_Draw_Pixel(x, i+y, color);
+  }
+}
+
+void LCD_Draw_Horizontal_Line(uint16_t x, uint16_t y, uint16_t len, uint16_t color){
+	for (uint16_t i = 0; i < len; i++){
+	  LCD_Draw_Pixel(i+x, y, color);
+	}
+}
+
+void LCD_Draw_Box(uint16_t x, uint16_t y, uint16_t height, uint16_t width, uint16_t color)
+{
+  for (uint16_t i = 0; i < height; i++){
+	  for(uint16_t j = 0; j < width; j++){
+		  LCD_Draw_Pixel(x+j, i+y, color);
+	  }
   }
 }
 
@@ -284,6 +298,15 @@ void LCD_DisplayChar(uint16_t Xpos, uint16_t Ypos, uint8_t Ascii)
   Ascii -= 32;
   LCD_Draw_Char(Xpos, Ypos, &LCD_Currentfonts->table[Ascii * LCD_Currentfonts->Height]);
 }
+
+void LCD_DisplayString(uint16_t Xpos, uint16_t Ypos, const char* str){
+	while(*str){
+		LCD_DisplayChar(Xpos, Ypos, (uint8_t)*str);
+		Xpos += LCD_Currentfonts->Width;
+		str++;
+	}
+}
+
 
 void visualDemo(void)
 {
@@ -350,32 +373,217 @@ void LCD_Error_Handler(void)
 
 #if COMPILE_TOUCH_FUNCTIONS == 1
 
-void InitializeLCDTouch(void)
-{
+void InitializeLCDTouch(void){
   if(STMPE811_Init() != STMPE811_State_Ok)
   {
 	 for(;;); // Hang code due to error in initialzation
   }
 }
 
-STMPE811_State_t returnTouchStateAndLocation(STMPE811_TouchData * touchStruct)
-{
+STMPE811_State_t returnTouchStateAndLocation(STMPE811_TouchData * touchStruct){
 	return STMPE811_ReadTouch(touchStruct);
 }
 
-void DetermineTouchPosition(STMPE811_TouchData * touchStruct)
-{
+void DetermineTouchPosition(STMPE811_TouchData* touchStruct){
 	STMPE811_DetermineTouchPosition(touchStruct);
 }
 
-uint8_t ReadRegisterFromTouchModule(uint8_t RegToRead)
-{
+uint8_t ReadRegisterFromTouchModule(uint8_t RegToRead){
 	return STMPE811_Read(RegToRead);
 }
 
-void WriteDataToTouchModule(uint8_t RegToWrite, uint8_t writeData)
-{
+void WriteDataToTouchModule(uint8_t RegToWrite, uint8_t writeData){
 	STMPE811_Write(RegToWrite, writeData);
 }
+
+uint8_t DetermineLeftOrRightTouch(uint16_t xCoord){
+	if(xCoord < (LCD_PIXEL_WIDTH/2)){
+		return LEFT;
+	}else{
+		return RIGHT;
+	}
+}
+
+
+void displayStartScreen(){
+	LCD_Clear(0,LCD_COLOR_BLACK);
+	LCD_SetTextColor(LCD_COLOR_WHITE);
+	LCD_SetFont(&Font16x24);
+
+	LCD_Draw_Circle_Fill(60,LCD_PIXEL_HEIGHT/2,50,LCD_COLOR_BLUE);
+
+	LCD_DisplayChar(30,(LCD_PIXEL_HEIGHT/2) - 20,'S');
+	LCD_DisplayChar(41,(LCD_PIXEL_HEIGHT/2) - 20,'i');
+	LCD_DisplayChar(50,(LCD_PIXEL_HEIGHT/2) - 20,'n');
+	LCD_DisplayChar(64,(LCD_PIXEL_HEIGHT/2) - 20,'g');
+	LCD_DisplayChar(73,(LCD_PIXEL_HEIGHT/2) - 20,'l');
+	LCD_DisplayChar(80,(LCD_PIXEL_HEIGHT/2) - 20,'e');
+
+	LCD_DisplayChar(30,(LCD_PIXEL_HEIGHT/2),'P');
+	LCD_DisplayChar(41,(LCD_PIXEL_HEIGHT/2),'l');
+	LCD_DisplayChar(49,(LCD_PIXEL_HEIGHT/2),'a');
+	LCD_DisplayChar(59,(LCD_PIXEL_HEIGHT/2),'y');
+	LCD_DisplayChar(72,(LCD_PIXEL_HEIGHT/2),'e');
+	LCD_DisplayChar(83,(LCD_PIXEL_HEIGHT/2),'r');
+
+	LCD_Draw_Circle_Fill(180,LCD_PIXEL_HEIGHT/2,50,LCD_COLOR_BLUE);
+
+	LCD_DisplayChar(155,(LCD_PIXEL_HEIGHT/2) - 20,'M');
+	LCD_DisplayChar(171,(LCD_PIXEL_HEIGHT/2) - 20,'u');
+	LCD_DisplayChar(183,(LCD_PIXEL_HEIGHT/2) - 20,'l');
+	LCD_DisplayChar(190,(LCD_PIXEL_HEIGHT/2) - 20,'t');
+	LCD_DisplayChar(197,(LCD_PIXEL_HEIGHT/2) - 20,'i');
+
+	LCD_DisplayChar(150,(LCD_PIXEL_HEIGHT/2),'P');
+	LCD_DisplayChar(161,(LCD_PIXEL_HEIGHT/2),'l');
+	LCD_DisplayChar(169,(LCD_PIXEL_HEIGHT/2),'a');
+	LCD_DisplayChar(179,(LCD_PIXEL_HEIGHT/2),'y');
+	LCD_DisplayChar(192,(LCD_PIXEL_HEIGHT/2),'e');
+	LCD_DisplayChar(203,(LCD_PIXEL_HEIGHT/2),'r');
+
+}
+
+void displayGameScreen(){
+	//Screen has 7 columns and 6 rows
+	LCD_Clear(0,LCD_COLOR_BLACK);
+
+	//Drawing Horizontal Lines
+	for(int i = 1; i < NUM_ROWS + 1; i++){
+		LCD_Draw_Horizontal_Line(0, (LCD_PIXEL_HEIGHT * ROW_NUM_DIVISOR) * i, LCD_PIXEL_WIDTH, LCD_COLOR_WHITE);
+	}
+	LCD_Draw_Horizontal_Line(0, LCD_PIXEL_HEIGHT - 1, LCD_PIXEL_WIDTH, LCD_COLOR_WHITE);
+
+	//Drawing vertical Lines
+	for(int i = 0; i < NUM_COLUMNS; i++){
+		LCD_Draw_Vertical_Line((LCD_PIXEL_WIDTH * COLUMN_NUM_DIVISOR) * i, LCD_PIXEL_HEIGHT * COLUMN_NUM_DIVISOR, (LCD_PIXEL_HEIGHT * 6) * COLUMN_NUM_DIVISOR, LCD_COLOR_WHITE);
+	}
+	LCD_Draw_Vertical_Line(LCD_PIXEL_WIDTH - 1, LCD_PIXEL_HEIGHT * 1/7, LCD_PIXEL_HEIGHT * 6/7, LCD_COLOR_WHITE);
+
+	GameData gameInfo = getGameData();
+	for(int i = 0; i < NUM_ROWS; i++){
+		for(int j = 0; j < NUM_COLUMNS ; j++){
+			if(gameInfo.board[i][j] == RED_TAKEN_SQUARE){
+				gameInfo.tokenLocation.x = (LCD_PIXEL_WIDTH * COLUMN_NUM_DIVISOR * (j + CHIP_OFFSET));
+				gameInfo.tokenLocation.y = (LCD_PIXEL_HEIGHT * ROW_NUM_DIVISOR * (i + 1 + CHIP_OFFSET));
+				LCD_Draw_Circle_Fill(gameInfo.tokenLocation.x, gameInfo.tokenLocation.y, CHIP_RADIUS, LCD_COLOR_RED);
+			}
+			if(gameInfo.board[i][j] == YELLOW_TAKEN_SQUARE){
+				gameInfo.tokenLocation.x = (LCD_PIXEL_WIDTH * COLUMN_NUM_DIVISOR * (j + CHIP_OFFSET));
+				gameInfo.tokenLocation.y = (LCD_PIXEL_HEIGHT * ROW_NUM_DIVISOR * (i + 1 + CHIP_OFFSET));
+				LCD_Draw_Circle_Fill(gameInfo.tokenLocation.x, gameInfo.tokenLocation.y, CHIP_RADIUS, LCD_COLOR_YELLOW);
+			}
+		}
+	}
+}
+
+void displayWinner(){
+	GameData gameInfo = getGameData();
+
+	LCD_SetTextColor(LCD_COLOR_BLACK);
+	LCD_SetFont(&Font16x24);
+	if(gameInfo.redWin || gameInfo.yellowWin){
+		if(gameInfo.redWin){
+			LCD_Draw_Circle_Fill(LCD_PIXEL_WIDTH_CENTER, LCD_PIXEL_HEIGHT_CENTER, 100, LCD_COLOR_RED);
+
+			LCD_DisplayChar(90,(LCD_PIXEL_HEIGHT/2) - 15,'R');
+			LCD_DisplayChar(110,(LCD_PIXEL_HEIGHT/2) - 15,'e');
+			LCD_DisplayChar(130,(LCD_PIXEL_HEIGHT/2) - 15,'d');
+			gameInfo.numRedWins++;
+		}
+		else if(gameInfo.yellowWin){
+			LCD_Draw_Circle_Fill(LCD_PIXEL_WIDTH_CENTER, LCD_PIXEL_HEIGHT_CENTER, 100, LCD_COLOR_YELLOW);
+
+			LCD_DisplayChar(70,(LCD_PIXEL_HEIGHT/2) - 15,'Y');
+			LCD_DisplayChar(90,(LCD_PIXEL_HEIGHT/2) - 15,'e');
+			LCD_DisplayChar(110,(LCD_PIXEL_HEIGHT/2) - 15,'l');
+			LCD_DisplayChar(130,(LCD_PIXEL_HEIGHT/2) - 15,'l');
+			LCD_DisplayChar(150,(LCD_PIXEL_HEIGHT/2) - 15,'o');
+			LCD_DisplayChar(170,(LCD_PIXEL_HEIGHT/2) - 15,'w');
+			gameInfo.numYellowWins++;
+		}
+
+		LCD_DisplayChar(85,(LCD_PIXEL_HEIGHT/2) + 5,'W');
+		LCD_DisplayChar(105,(LCD_PIXEL_HEIGHT/2) + 5,'i');
+		LCD_DisplayChar(125,(LCD_PIXEL_HEIGHT/2) + 5,'n');
+		LCD_DisplayChar(145,(LCD_PIXEL_HEIGHT/2) + 5,'s');
+	}else{
+		LCD_Draw_Circle_Fill(LCD_PIXEL_WIDTH_CENTER, LCD_PIXEL_HEIGHT_CENTER, 100, LCD_COLOR_GREY);
+
+		LCD_DisplayChar(85,(LCD_PIXEL_HEIGHT/2) - 5,'D');
+		LCD_DisplayChar(105,(LCD_PIXEL_HEIGHT/2) - 5,'r');
+		LCD_DisplayChar(125,(LCD_PIXEL_HEIGHT/2) - 5,'a');
+		LCD_DisplayChar(145,(LCD_PIXEL_HEIGHT/2) - 5,'w');
+	}
+
+	LCD_Draw_Box(40, 280, 35, 160, LCD_COLOR_BLUE);
+
+	LCD_DisplayChar(60,290,'C');
+	LCD_DisplayChar(75,290,'o');
+	LCD_DisplayChar(90,290,'n');
+	LCD_DisplayChar(105,290,'t');
+	LCD_DisplayChar(120,290,'i');
+	LCD_DisplayChar(135,290,'n');
+	LCD_DisplayChar(150,290,'u');
+	LCD_DisplayChar(165,290,'e');
+}
+
+
+
+void displayEndScreen(){
+	LCD_Clear(0,LCD_COLOR_BLACK);
+	LCD_SetTextColor(LCD_COLOR_WHITE);
+	LCD_SetFont(&Font16x24);
+
+	GameData gameInfo = getGameData();
+
+	LCD_DisplayString(85, LCD_PIXEL_HEIGHT/8, "Wins");
+	LCD_Draw_Horizontal_Line(80, (LCD_PIXEL_HEIGHT/8) + 23, 70, LCD_COLOR_WHITE);
+
+	LCD_SetTextColor(LCD_COLOR_RED);
+	LCD_DisplayString(20, LCD_PIXEL_HEIGHT/4, "Red:");
+
+	char redWins[6];
+	sprintf(redWins, "%d", gameInfo.numRedWins);
+
+	LCD_DisplayString(80, LCD_PIXEL_HEIGHT/4, redWins);
+
+
+	LCD_SetTextColor(LCD_COLOR_YELLOW);
+	LCD_DisplayString(110, LCD_PIXEL_HEIGHT/4, "Yellow:");
+
+	char yellowWins[6];
+	sprintf(yellowWins, "%d", gameInfo.numYellowWins);
+
+	LCD_DisplayString(220, LCD_PIXEL_HEIGHT/4, yellowWins);
+
+
+	LCD_SetTextColor(LCD_COLOR_WHITE);
+	LCD_DisplayChar(60,LCD_PIXEL_HEIGHT_CENTER,'T');
+	LCD_DisplayChar(75,LCD_PIXEL_HEIGHT_CENTER,'i');
+	LCD_DisplayChar(90,LCD_PIXEL_HEIGHT_CENTER,'m');
+	LCD_DisplayChar(105,LCD_PIXEL_HEIGHT_CENTER,'e');
+	LCD_DisplayChar(115,LCD_PIXEL_HEIGHT_CENTER,':');
+
+	char time[12];
+	sprintf(time ,"%ds", calculateTotalTime());
+
+	LCD_DisplayString(130, LCD_PIXEL_HEIGHT_CENTER, time);
+
+
+	LCD_Draw_Box(40, 280, 35, 160, LCD_COLOR_BLUE);
+
+	LCD_DisplayChar(60,290,'C');
+	LCD_DisplayChar(75,290,'o');
+	LCD_DisplayChar(90,290,'n');
+	LCD_DisplayChar(105,290,'t');
+	LCD_DisplayChar(120,290,'i');
+	LCD_DisplayChar(135,290,'n');
+	LCD_DisplayChar(150,290,'u');
+	LCD_DisplayChar(165,290,'e');
+
+}
+
+
+
 
 #endif // COMPILE_TOUCH_FUNCTIONS

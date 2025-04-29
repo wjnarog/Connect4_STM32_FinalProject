@@ -1,4 +1,6 @@
 "./Core/Src/ApplicationCode.o"
+"./Core/Src/Button_Driver.o"
+"./Core/Src/Game_Driver.o"
 "./Core/Src/LCD_Driver.o"
 "./Core/Src/fonts.o"
 "./Core/Src/ili9341.o"

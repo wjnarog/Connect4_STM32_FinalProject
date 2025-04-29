@@ -1,0 +1,16 @@
+../Core/Src/Game_Driver.c:12:6:gameInit	136	static
+../Core/Src/Game_Driver.c:40:6:spawnPendingToken	136	static
+../Core/Src/Game_Driver.c:59:6:movePendingToken	136	static
+../Core/Src/Game_Driver.c:85:6:dropToken	144	static
+../Core/Src/Game_Driver.c:152:5:countMatchesInEachDirection	96	static
+../Core/Src/Game_Driver.c:188:6:check_win_cond	136	static
+../Core/Src/Game_Driver.c:216:6:check_possible_win_cond	80	static
+../Core/Src/Game_Driver.c:246:6:isColumnFull	88	static
+../Core/Src/Game_Driver.c:256:6:isBoardFull	16	static
+../Core/Src/Game_Driver.c:265:5:calculateTotalTime	80	static
+../Core/Src/Game_Driver.c:272:10:roundToSeconds	16	static
+../Core/Src/Game_Driver.c:280:6:OpponentPlayRNG	24	static
+../Core/Src/Game_Driver.c:295:6:OpponentPlayAI	136	static
+../Core/Src/Game_Driver.c:323:10:getRandomInRange	24	static
+../Core/Src/Game_Driver.c:334:6:setGameData	12	static
+../Core/Src/Game_Driver.c:338:10:getGameData	24	static
