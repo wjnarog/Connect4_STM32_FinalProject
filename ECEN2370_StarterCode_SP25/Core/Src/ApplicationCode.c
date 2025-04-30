@@ -76,6 +76,7 @@ void Run_Game(void){
 
 	gameInfo.startTime = HAL_GetTick();
 	setGameData(gameInfo);
+	isButtonPressed = false;
 
 	while(1){
 		HAL_Delay(200);
