@@ -101,9 +101,8 @@ void dropToken(uint16_t tokenColor){
 		}
 	}
 
-	//if(gameInfo.tokenLocation.x == 0){
-		gameInfo.tokenLocation.x = (LCD_PIXEL_WIDTH * COLUMN_NUM_DIVISOR * (gameInfo.tokenLocation.column + CHIP_OFFSET));
-	//}
+
+	gameInfo.tokenLocation.x = (LCD_PIXEL_WIDTH * COLUMN_NUM_DIVISOR * (gameInfo.tokenLocation.column + CHIP_OFFSET));
 
 	if(!isColumnFull(gameInfo.tokenLocation.column)){
 		setGameData(gameInfo);
@@ -221,7 +220,6 @@ bool check_possible_win_cond(uint8_t currPlayer, uint8_t currRow, uint8_t currCo
 	    {-1, 1}   // Diagonal up-right
 	};
 
-//	GameData gameInfo = getGameData();
 
 	for (int i = 0; i < 4; i++) {
 		int count = 1;
@@ -234,11 +232,37 @@ bool check_possible_win_cond(uint8_t currPlayer, uint8_t currRow, uint8_t currCo
 		count += countMatchesInEachDirection(currPlayer, currRow, currCol, row, col);
 		count += countMatchesInEachDirection(currPlayer, currRow, currCol, -row, -col);
 
-//		if (count >= 4){
 		if(count >= 4){
 			return true;
 		}
 	}
+	return false;
+}
+
+bool check_advanced_possible_win_cond(uint8_t currPlayer, uint8_t currRow, uint8_t currCol){
+	int directions[4][2] = {
+	    {0, 1},   // Horizontal
+	    {1, 0},   // Vertical
+	    {1, 1},   // Diagonal down-right
+	    {-1, 1}   // Diagonal up-right
+	};
+
+	for (int i = 0; i < 4; i++) {
+		int count = 1;
+
+		int row = directions[i][0];
+	    int col = directions[i][1];
+
+
+		//checking in both directions
+		count += countMatchesInEachDirection(currPlayer, currRow, currCol, row, col);
+		count += countMatchesInEachDirection(currPlayer, currRow, currCol, -row, -col);
+
+		if(count >= 3){
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -305,7 +329,17 @@ void OpponentPlayAI(){
 					setGameData(gameInfo);
 					dropToken(LCD_COLOR_YELLOW);
 					return;
-				}else if(check_possible_win_cond(RED_PLAYER, r, c)){
+				}
+				break;
+			}
+		}
+	}
+
+	for(int c = 0; c < NUM_COLUMNS; c++){
+		int r = NUM_ROWS - 1;
+		for(r = NUM_ROWS - 1; r >= 0; r--){
+			if(gameInfo.board[r][c] == EMPTY_SQUARE){
+				if(check_possible_win_cond(RED_PLAYER, r, c)){
 					gameInfo.tokenLocation.row = r;
 					gameInfo.tokenLocation.column = c;
 					setGameData(gameInfo);
@@ -316,8 +350,31 @@ void OpponentPlayAI(){
 			}
 		}
 	}
+#if(PLAY_AI == 2)
+	for(int c = 0; c < NUM_COLUMNS; c++){
+		int r = NUM_ROWS - 1;
+		for(r = NUM_ROWS - 1; r >= 0; r--){
+			if(gameInfo.board[r][c] == EMPTY_SQUARE){
+				if(check_advanced_possible_win_cond(YELLOW_PLAYER, r, c)){
+					gameInfo.tokenLocation.row = r;
+					gameInfo.tokenLocation.column = c;
+					setGameData(gameInfo);
+					dropToken(LCD_COLOR_YELLOW);
+					return;
+				}else if(check_advanced_possible_win_cond(RED_PLAYER, r, c)){
+					gameInfo.tokenLocation.row = r;
+					gameInfo.tokenLocation.column = c;
+					setGameData(gameInfo);
+					dropToken(LCD_COLOR_YELLOW);
+					return;
+				}
+				break;
+			}
+		}
+	}
+#endif
+
 	OpponentPlayRNG();
-//	setGameData(gameInfo);
 }
 
 uint32_t getRandomInRange(uint32_t min, uint32_t max)

@@ -2,5 +2,5 @@
 ../Core/Src/ApplicationCode.c:40:6:LCD_Visual_Demo	1
 ../Core/Src/ApplicationCode.c:47:6:startGame	3
 ../Core/Src/ApplicationCode.c:70:6:Run_Game	11
-../Core/Src/ApplicationCode.c:126:6:EXTI0_IRQHandler	1
-../Core/Src/ApplicationCode.c:137:6:HAL_GPIO_EXTI_Callback	2
+../Core/Src/ApplicationCode.c:133:6:EXTI0_IRQHandler	1
+../Core/Src/ApplicationCode.c:144:6:HAL_GPIO_EXTI_Callback	2

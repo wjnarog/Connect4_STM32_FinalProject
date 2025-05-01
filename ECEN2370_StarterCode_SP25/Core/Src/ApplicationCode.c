@@ -76,6 +76,7 @@ void Run_Game(void){
 
 	gameInfo.startTime = HAL_GetTick();
 	setGameData(gameInfo);
+	isButtonPressed = false;
 
 	while(1){
 		HAL_Delay(200);
@@ -84,6 +85,8 @@ void Run_Game(void){
 		if(gameInfo.redWin || gameInfo.yellowWin || isBoardFull()){
 			gameInfo.endTime = HAL_GetTick();
 			setGameData(gameInfo);
+			//Delay so user can see win/loss
+			HAL_Delay(1000);
 			displayWinner();
 			while(1){
 				if(returnTouchStateAndLocation(&StaticTouchData) == STMPE811_State_Pressed){
@@ -108,8 +111,12 @@ void Run_Game(void){
 		}
 
 		if(gameInfo.mode == SINGLE_PLAYER && gameInfo.currentPlayer == YELLOW_PLAYER){
-//			OpponentPlayRNG();
+#if (PLAY_AI == 1 || PLAY_AI == 2)
 			OpponentPlayAI();
+
+#else
+			OpponentPlayRNG();
+#endif
 		}else{
 			if(returnTouchStateAndLocation(&StaticTouchData) == STMPE811_State_Pressed){
 				movePendingToken(DetermineLeftOrRightTouch(StaticTouchData.x));

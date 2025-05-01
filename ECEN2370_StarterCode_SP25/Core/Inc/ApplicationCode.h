@@ -16,6 +16,9 @@
 #ifndef INC_APPLICATIONCODE_H_
 #define INC_APPLICATIONCODE_H_
 
+// 0 for RNG, 1 for normal AI, 2 for advanced AI
+#define PLAY_AI 1
+
 void ApplicationInit(void);
 void LCD_Visual_Demo(void);
 

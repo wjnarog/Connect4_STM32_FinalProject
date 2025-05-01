@@ -302,6 +302,7 @@ void LCD_DisplayChar(uint16_t Xpos, uint16_t Ypos, uint8_t Ascii)
 void LCD_DisplayString(uint16_t Xpos, uint16_t Ypos, const char* str){
 	while(*str){
 		LCD_DisplayChar(Xpos, Ypos, (uint8_t)*str);
+
 		Xpos += LCD_Currentfonts->Width;
 		str++;
 	}

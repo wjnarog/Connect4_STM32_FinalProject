@@ -2,5 +2,5 @@
 ../Core/Src/ApplicationCode.c:40:6:LCD_Visual_Demo	8	static
 ../Core/Src/ApplicationCode.c:47:6:startGame	128	static
 ../Core/Src/ApplicationCode.c:70:6:Run_Game	192	static
-../Core/Src/ApplicationCode.c:126:6:EXTI0_IRQHandler	8	static
-../Core/Src/ApplicationCode.c:137:6:HAL_GPIO_EXTI_Callback	16	static
+../Core/Src/ApplicationCode.c:133:6:EXTI0_IRQHandler	8	static
+../Core/Src/ApplicationCode.c:144:6:HAL_GPIO_EXTI_Callback	16	static

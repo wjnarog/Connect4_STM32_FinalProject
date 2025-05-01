@@ -78,7 +78,6 @@ bool check_win_cond();
 
 bool check_possible_win_cond(uint8_t currPlayer, uint8_t currRow, uint8_t currCol);
 
-
 bool isColumnFull(uint8_t column);
 
 bool isBoardFull();
